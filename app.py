@@ -6,8 +6,16 @@ import random
 import time
 
 img=None
-botPose=[[0,0]]
+botPose=[]
 obstaclePose=[]
+greenZone=[]
+redZone=[]
+originalGreenZone = []
+mission_complete = False
+score = 0
+level = 0
+numbots = 1
+
 app = Flask(__name__, static_url_path = "")
 
 @app.errorhandler(400)
@@ -21,10 +29,31 @@ def not_found2(error):
 @app.route('/', methods = ['GET'])
 def getInfo():
     return redirect('/map')
-    
+
+@app.route('/score', methods=['GET'])
+def getScore():
+    global score
+    return jsonify({'score': score})
+
+@app.route('/level', methods=['GET'])
+def getLevel():
+    global level
+    return jsonify({'level': level})
+
+@app.route('/numbots', methods=['GET'])
+def getnNumbots():
+    global numbots
+    return jsonify({'numbots': numbots})
+
 @app.route('/map', methods = ['GET'])   #Hosts map at http://127.0.0.1:5000/map
 def getMap():
-    return send_file('images/map.png', mimetype='image/png',cache_timeout=-1)
+    global img, numbots
+    curr_img = np.copy(img)
+    for botId in range(numbots):
+        curr_img[botPose[botId][0]-3:botPose[botId][0]+3, botPose[botId][1]-3:botPose[botId][1]+3] = np.array([0, 0, 255])
+    im=Image.fromarray(curr_img)
+    im.save("images/curr_map.png")
+    return send_file('images/curr_map.png', mimetype='image/png',cache_timeout=-1)
 
 @app.route('/botPose', methods = ['GET']) #Hosts botPose at http://127.0.0.1:5000/botPose and so on
 def getBotPose():
@@ -36,28 +65,136 @@ def getObstaclePose():
     global obstaclePose
     return jsonify(obstaclePose)
 
-@app.route('/finalPose', methods = ['GET'])
+@app.route('/greenZone', methods = ['GET'])
 def getFinalPose():
-    global img
-    return jsonify([img.shape[0]-1,img.shape[0]-1])
+    global greenZone
+    return jsonify(greenZone)
+
+@app.route('/redZone', methods=['GET'])
+def getRedZone():
+    global redZone
+    return jsonify(redZone)
+
+@app.route('/originalGreenZone', methods=['GET'])
+def getOriginalGreenZone():
+    global originalGreenZone
+    return jsonify(originalGreenZone)
 
 @app.route('/move', methods = ['GET'])
 def move():
-    global botPose,obstaclePose
+    global botPose,obstaclePose, mission_complete, score
+    if mission_complete:
+        return jsonify({'success': False, 'mission_complete': mission_complete})
     data=request.json
     if 'botId' not in data or 'moveType' not in data:
         abort(400)
-    data['botId']=int(data['botId'])
+    data['botId'] = int(data['botId'])
     data['moveType']=int(data['moveType'])
-    if data['botId']<=0 or data['botId']>len(botPose):
+    if data['botId']<0 or data['botId']>len(botPose):
         abort(400)
-    if data['moveType']<=0 or data['moveType']>8:
+    if data['moveType']<1 or data['moveType']>8:
         abort(400)
-    pass    
-    return jsonify({'success': 0})
+    if check_and_move(data['botId'], data['moveType']):
+        score += check_mission(data['botId'])
+        return jsonify({'success': True, 'mission_complete': mission_complete})
+    else:
+        return jsonify({'success': False, 'mission_complete': mission_complete})
+
+def check_mission(botId):
+    global img, mission_complete, greenZone
+    if np.all(img[botPose[botId][0], botPose[botId][1]] - np.array([255, 0, 0]), 0):
+        move_score = 2
+    else:
+        move_score = 1
+    for rect in greenZone:
+        minx, miny = min([point[0] for point in rect]), min([point[1] for point in rect])
+        maxx, maxy = max([point[0] for point in rect]), max([point[1] for point in rect])
+        if minx <= botPose[botId][0] <= maxx and miny <= botPose[botId][1] <= maxy:
+            greenZone = [r for r in greenZone if r != rect]
+            img[rect[0][0]:rect[2][0], rect[0][1]:rect[2][1]] = [0, 100, 0]
+            break
+    if len(greenZone) == 0:
+        mission_complete = True
+    return move_score
+
+def check_and_move(botId, moveType):
+    global img, botPose
+    x = botPose[botId][0]
+    y = botPose[botId][1]
+    valid_color = np.array([255, 255, 255])
+    print(img[x,y])
+    if moveType == 1:
+        if x-1 >= 0 and  y-1 >= 0 and np.all(img[x-1,y-1] - valid_color == 0):
+            botPose[botId][0], botPose[botId][1] = x-1, y-1
+            return True
+    elif moveType == 2:
+        if x-1 >= 0 and np.all(img[x-1,y] - valid_color == 0):
+            botPose[botId][0], botPose[botId][1] = x-1, y
+            return True
+    elif moveType == 3:
+        if x-1 >= 0 and y+1 < img.shape[1] and np.all(img[x-1,y+1] - valid_color == 0):
+            botPose[botId][0], botPose[botId][1] = x-1, y+1
+            return True
+    elif moveType == 4:
+        if y+1 < img.shape[1] and np.all(img[x,y+1] - valid_color == 0):
+            botPose[botId][0], botPose[botId][1] = x, y+1
+            return True
+    elif moveType == 5:
+        if x+1 < img.shape[0] and y+1 < img.shape[1] and np.all(img[x+1,y+1] - valid_color == 0):
+            botPose[botId][0], botPose[botId][1] = x+1, y+1
+            return True
+    elif moveType == 6:
+        if x+1 < img.shape[0] and np.all(img[x+1,y] - valid_color == 0):
+            botPose[botId][0], botPose[botId][1] = x+1, y
+            return True
+    elif moveType == 7:
+        if x+1 < img.shape[0] and y-1 >= 0 and np.all(img[x+1,y-1] - valid_color == 0):
+            botPose[botId][0], botPose[botId][1] = x+1, y-1
+            return True
+    elif moveType == 8:
+        if y-1 >= 0 and np.all(img[x,y-1] - valid_color == 0):
+            botPose[botId][0], botPose[botId][1] = x, y-1
+            return True
+    else:
+        return False
+
+def setup():
+    global level, numbots
+    while level == 0:
+        level = int(input("Please enter level(1/2/3/4/5/6): "))
+        if not (0 < level < 7):
+            level = 0
+            continue
+        else:
+            # TODO: Guided tour of the level
+            if level == 1 or level == 2:
+                numbots = 1
+            elif level == 3 or level == 5:
+                numbots = 2
+            elif level == 4 or level == 6:
+                numbots = max(8, int(input("Number of bots in play(max 8): ")))
+            else:
+                level = 0
+                continue
+
 
 def createImage(size1,size2):
-    global img,obstaclePose
+    global img,obstaclePose, greenZone, redZone, level, numbots, greenZone
+    setup()
+    # Single agent
+    if level == 1 or level == 2:
+        botPose.append([0, 0])
+    # 2 agents
+    elif level == 3 or level == 5:
+        botPose.append([0, 0])
+        botPose.append([5, 5])
+    # Multiple agents
+    else:
+        for i in range(numbots):
+            x, y = random.randint(0, 19), random.randint(0, 19)
+            while [x, y] in botPose:
+                x, y = random.randint(0, 19), random.randint(0, 19)
+            botPose.append([x,y])
     size=size2//2
     arr=[[0,0],[0,1],[1,0],[1,1]]
     random.seed(time.time())
@@ -72,10 +209,43 @@ def createImage(size1,size2):
             if (newX==0 and newY==0) or (newX==size1-(size2//2) and newY==size1-(size2//2)):
                 pass
             else:
-                img[newX:newX+(size2//2),newY:newY+(size2//2),:]=np.zeros((size2//2,size2//2,3))
-                obstaclePose.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                # Single-objective environment
+                if level == 1:
+                    img[newX:newX+(size2//2),newY:newY+(size2//2),:]=np.zeros((size2//2,size2//2,3))
+                    obstaclePose.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+
+                # Multi-objective unconstrained environment
+                elif level == 2 or level == 3 or level == 4:
+                    if np.random.random() < 0.3:
+                        img[newX:newX+(size2//2),newY:newY+(size2//2),:]=[0, 255, 0]
+                        greenZone.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                    else:
+                        img[newX:newX+(size2//2),newY:newY+(size2//2),:]=np.zeros((size2//2,size2//2,3))
+                        obstaclePose.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+
+                # Multi-objective contrained environment
+                else:
+                    srand = np.random.random()
+                    if srand < 0.3:
+                        img[newX:newX+(size2//2),newY:newY+(size2//2),:]=[0, 255, 0]
+                        greenZone.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                    elif srand < 0.5:
+                        img[newX:newX+(size2//2),newY:newY+(size2//2),:]=[255, 0, 0]
+                        redZone.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                    else:
+                        img[newX:newX+(size2//2),newY:newY+(size2//2),:]=np.zeros((size2//2,size2//2,3))
+                        obstaclePose.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
             yTop=yTop+size2
         xTop=xTop+size2
+    img[img.shape[0]-3:img.shape[0]+3, img.shape[1]-3:img.shape[1]+3] = [0, 255, 0]
+    greenZone.append([[img.shape[0]-3, img.shape[1]-3], [img.shape[0]-3, img.shape[1]-1], [img.shape[0]-1, img.shape[1]-1], [img.shape[0]-1, img.shape[1]-3]])
+
+    # Shuffle the lists to prevent easy giveaways!
+    random.shuffle(greenZone)
+    random.shuffle(redZone)
+    random.shuffle(obstaclePose)
+    originalGreenZone = greenZone[:]
+
     im=Image.fromarray(img)
     im.save("images/map.png")
 
