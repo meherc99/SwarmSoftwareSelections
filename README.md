@@ -11,6 +11,18 @@
 * [Obstacle Avoidance and Path Retracing](https://2019.robotix.in/tutorial/pathplanning/obstacleavoidance/)
 * [RRT Path Planning](https://2019.robotix.in/tutorial/pathplanning/rrtplanner/)
 
+## Submission Guidelines
+
+Please register at [this](http://swarm-iitkgp.github.io/recruit), before participating, so that we can notify you of interviews, meetings and changes, if any.
+
+The contest is live till 4th March, 2019. You need to submit only `code.py` file over email to the following email address: spandankumarsahu@gmail.com, with the subject as `[Software Selections 2019]<RollNumber>`
+
+There will be meetings held for doubts and help, on a weekly basis, the exact date and time will be notified through email.
+
+The results of the contest will be updated on a weekly basis, and will be shared through Swarm Robotics' Facebook page. So please, like and follow the page.
+
+For any queries, doubts or help, please email at: spandankumarsahu@gmail.com or give a call to Haque(7430099555) or Spandan(7477858944).
+
 ## How to Run
 Clone this repository (either download it, or use this command on a terminal: `git clone https://github.com/Swarm-IITKgp/SwarmSoftwareSelections`)
 
@@ -33,8 +45,6 @@ If you want to view the simulations, run:
 Your task is to complete up as many functions/levels as possible in `code.py` and submit your codes to spandankumarsahu@gmail.com. You need not attempt all the levels, but sure, the more the better your chances are to get into the team. Your functions may not be optimal (in some cases, optimality cannot even be guaranteed!). We would solely judge on how you approach the problem and how much effort you've put in! :)
 
 This problem statement comes with a sample (pretty unintelligent!) submission for level 1 problem. We shall be providing sample (again, unintelligent ones!) for higher levels too.
-
-For any queries, doubts or
 
 ## Code Structure
 There is really not much to play with. There is only one file named `code.py`, which you must edit and fill out the functions. You're encouraged to use solutions from the lower levels to solve problems of higher level. You can refer to the documentations in `api.py`, in case you are unsure about what a command does.
