@@ -23,6 +23,7 @@ elif level == 3:
     for i in range(2):
         thread = myThread(i)
         threads.append(thread)
+        thread.start()
     for t in threads:
         t.join()
     print("The final score is: "+str(get_score()))
