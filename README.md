@@ -4,8 +4,10 @@
 * Please install Ubuntu 16.04 or above on your laptop (Cannot verify the sanity of the codes for Windows machine)
 * Ensure you have Python3 and pip installed
 * Ensure you have basic understanding of Python
+* Please download/clone the latest version of this repository. If any bug is discovered, please mail to spandankumarsahu@gmail.com, with the bug details. For the most updated codes, use `git pull swarm master`, once you have cloned the repository.
 
 ## Resources
+* [Git and Github tutorial](https://in.udacity.com/course/how-to-use-git-and-github--ud775-india)
 * [A* path planning algorithm](https://www.hackerearth.com/practice/notes/a-search-algorithm/)
 * [Dijkstra path planning](https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/)
 * [Obstacle Avoidance and Path Retracing](https://2019.robotix.in/tutorial/pathplanning/obstacleavoidance/)

@@ -172,7 +172,7 @@ def setup():
             elif level == 3 or level == 5:
                 numbots = 2
             elif level == 4 or level == 6:
-                numbots = max(8, int(input("Number of bots in play(max 8): ")))
+                numbots = min(8, int(input("Number of bots in play(max 8): ")))
             else:
                 level = 0
                 continue

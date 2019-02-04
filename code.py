@@ -17,6 +17,7 @@ def level1(botId):
         else:
             # The mission has been completed. You may now exit.
             # The final score will be displayed on the screen
+            break
 
 def level2(botId):
     pass
