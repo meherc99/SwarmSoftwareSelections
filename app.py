@@ -181,20 +181,7 @@ def setup():
 def createImage(size1,size2):
     global img,obstaclePose, greenZone, redZone, level, numbots, greenZone
     setup()
-    # Single agent
-    if level == 1 or level == 2:
-        botPose.append([0, 0])
-    # 2 agents
-    elif level == 3 or level == 5:
-        botPose.append([0, 0])
-        botPose.append([5, 5])
-    # Multiple agents
-    else:
-        for i in range(numbots):
-            x, y = random.randint(0, 19), random.randint(0, 19)
-            while [x, y] in botPose:
-                x, y = random.randint(0, 19), random.randint(0, 19)
-            botPose.append([x,y])
+
     size=size2//2
     arr=[[0,0],[0,1],[1,0],[1,1]]
     random.seed(time.time())
@@ -237,6 +224,13 @@ def createImage(size1,size2):
                         obstaclePose.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
             yTop=yTop+size2
         xTop=xTop+size2
+
+    for i in range(numbots):
+        x, y = random.randint(0, 199), random.randint(0, 199)
+        while [x, y] in botPose or not np.all(img[x, y] - [255, 255, 255] == 0):
+            x, y = random.randint(0, 199), random.randint(0, 199)
+        botPose.append([x, y])
+
     img[img.shape[0]-3:img.shape[0]+3, img.shape[1]-3:img.shape[1]+3] = [0, 255, 0]
     greenZone.append([[img.shape[0]-3, img.shape[1]-3], [img.shape[0]-3, img.shape[1]-1], [img.shape[0]-1, img.shape[1]-1], [img.shape[0]-1, img.shape[1]-3]])
 
