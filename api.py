@@ -1,5 +1,8 @@
 import requests
 import time
+from io import BytesIO
+from PIL import Image
+import numpy as np
 
 '''
 Feel free to visit explore each of the links after you have run setup.sh
@@ -14,6 +17,7 @@ original_greenZone_url = 'http://127.0.0.1:5000/originalGreenZone'
 redZone_url = 'http://127.0.0.1:5000/redZone'
 level_url = 'http://127.0.0.1:5000/level'
 numbots_url = 'http://127.0.0.1:5000/numbots'
+map_url='http://127.0.0.1:5000/map'
 
 
 def send_command(botId, moveType):
@@ -38,7 +42,7 @@ def send_command(botId, moveType):
                 'moveType':moveType,
     }
     r=requests.get(cmd_url,json=command)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()['success'], r.json()['mission_complete']
 
 def get_level():
@@ -49,7 +53,7 @@ def get_level():
         level   int     The level which you're attempting
     '''
     r = requests.get(level_url)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()['level']
 
 def get_numbots():
@@ -60,7 +64,7 @@ def get_numbots():
         numbots   int     Total number of zooids on the grid
     '''
     r = requests.get(numbots_url)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()['numbots']
 
 def get_score():
@@ -71,7 +75,7 @@ def get_score():
         score   int     Total number of steps, the less the better
     '''
     r = requests.get(score_url)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()['score']
 
 def get_obstacles_list():
@@ -87,7 +91,7 @@ def get_obstacles_list():
     through an obstacle.
     '''
     r = requests.get(obstacle_url)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()
 
 def get_redZone_list():
@@ -104,7 +108,7 @@ def get_redZone_list():
     and avoid this region, unless the other viable path is really long.
     '''
     r = requests.get(redZone_url)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()
 
 def get_greenZone_list():
@@ -124,7 +128,7 @@ def get_greenZone_list():
     is visited, it is moved out of this list. So the mission is to get this list empty.
     '''
     r = requests.get(greenZone_url)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()
 
 def get_original_greenZone_list():
@@ -140,7 +144,7 @@ def get_original_greenZone_list():
     it would contain all the green regions that were there in the beginning
     '''
     r = requests.get(original_greenZone_url)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()
 
 
@@ -157,5 +161,17 @@ def get_botPose_list():
     most important function, in terms of feedback.
     '''
     r = requests.get(botPose_url)
-    time.sleep(0.2)
+    time.sleep(0.05)
     return r.json()
+
+def get_Map():
+    '''
+    Inputs:
+
+    Returns:
+        numpy array of map image
+    Work:
+    '''
+    r = requests.get('http://127.0.0.1:5000/map')
+    img = np.array(Image.open(BytesIO(r.content)))
+    return img

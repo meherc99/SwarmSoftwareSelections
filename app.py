@@ -70,6 +70,11 @@ def getFinalPose():
     global greenZone
     return jsonify(greenZone)
 
+@app.route('/missionComplete', methods = ['GET'])
+def getMission():
+    global mission_complete
+    return jsonify(mission_complete)
+
 @app.route('/redZone', methods=['GET'])
 def getRedZone():
     global redZone
@@ -200,29 +205,29 @@ def createImage(size1,size2):
                 # Single-objective environment
                 if level == 1:
                     img[newX:newX+(size2//2),newY:newY+(size2//2),:]=np.zeros((size2//2,size2//2,3))
-                    obstaclePose.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                    obstaclePose.append([[newX,newY],[newX,newY+size-1],[newX+size-1,newY+size-1],[newX+size-1,newY]])
 
                 # Multi-objective unconstrained environment
                 elif level == 2 or level == 3 or level == 4:
                     if np.random.random() < 0.3:
                         img[newX:newX+(size2//2),newY:newY+(size2//2),:]=[0, 255, 0]
-                        greenZone.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                        greenZone.append([[newX,newY],[newX,newY+size-1],[newX+size-1,newY+size-1],[newX+size-1,newY]])
                     else:
                         img[newX:newX+(size2//2),newY:newY+(size2//2),:]=np.zeros((size2//2,size2//2,3))
-                        obstaclePose.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                        obstaclePose.append([[newX,newY],[newX,newY+size-1],[newX+size-1,newY+size-1],[newX+size-1,newY]])
 
                 # Multi-objective contrained environment
                 else:
                     srand = np.random.random()
                     if srand < 0.3:
                         img[newX:newX+(size2//2),newY:newY+(size2//2),:]=[0, 255, 0]
-                        greenZone.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                        greenZone.append([[newX,newY],[newX,newY+size-1],[newX+size-1,newY+size-1],[newX+size-1,newY]])
                     elif srand < 0.5:
                         img[newX:newX+(size2//2),newY:newY+(size2//2),:]=[255, 0, 0]
-                        redZone.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                        redZone.append([[newX,newY],[newX,newY+size-1],[newX+size-1,newY+size-1],[newX+size-1,newY]])
                     else:
                         img[newX:newX+(size2//2),newY:newY+(size2//2),:]=np.zeros((size2//2,size2//2,3))
-                        obstaclePose.append([[newX,newY],[newX,newY+size],[newX+size,newY+size],[newX+size,newY]])
+                        obstaclePose.append([[newX,newY],[newX,newY+size-1],[newX+size-1,newY+size-1],[newX+size-1,newY]])
             yTop=yTop+size2
         xTop=xTop+size2
 
