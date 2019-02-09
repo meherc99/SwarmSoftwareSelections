@@ -122,37 +122,38 @@ def check_and_move(botId, moveType):
     x = botPose[botId][0]
     y = botPose[botId][1]
     valid_color = np.array([255, 255, 255])
+    green_color = np.array([0, 255, 0])
     print(img[x,y])
     if moveType == 1:
-        if x-1 >= 0 and  y-1 >= 0 and np.all(img[x-1,y-1] - valid_color == 0):
+        if x-1 >= 0 and  y-1 >= 0 and (np.all(img[x-1,y-1] - valid_color == 0) or np.all(img[x-1,y-1] - green_color == 0)):
             botPose[botId][0], botPose[botId][1] = x-1, y-1
             return True
     elif moveType == 2:
-        if x-1 >= 0 and np.all(img[x-1,y] - valid_color == 0):
+        if x-1 >= 0 and (np.all(img[x-1,y] - valid_color == 0) or np.all(img[x-1,y] - green_color == 0)):
             botPose[botId][0], botPose[botId][1] = x-1, y
             return True
     elif moveType == 3:
-        if x-1 >= 0 and y+1 < img.shape[1] and np.all(img[x-1,y+1] - valid_color == 0):
+        if x-1 >= 0 and y+1 < img.shape[1] and (np.all(img[x-1,y+1] - valid_color == 0) or np.all(img[x-1,y+1] - green_color == 0)):
             botPose[botId][0], botPose[botId][1] = x-1, y+1
             return True
     elif moveType == 4:
-        if y+1 < img.shape[1] and np.all(img[x,y+1] - valid_color == 0):
+        if y+1 < img.shape[1] and (np.all(img[x,y+1] - valid_color == 0) or np.all(img[x,y+1] - green_color == 0)):
             botPose[botId][0], botPose[botId][1] = x, y+1
             return True
     elif moveType == 5:
-        if x+1 < img.shape[0] and y+1 < img.shape[1] and np.all(img[x+1,y+1] - valid_color == 0):
+        if x+1 < img.shape[0] and y+1 < img.shape[1] and (np.all(img[x+1,y+1] - valid_color == 0) or np.all(img[x+1,y+1] - green_color == 0)):
             botPose[botId][0], botPose[botId][1] = x+1, y+1
             return True
     elif moveType == 6:
-        if x+1 < img.shape[0] and np.all(img[x+1,y] - valid_color == 0):
+        if x+1 < img.shape[0] and (np.all(img[x+1,y] - valid_color == 0) or np.all(img[x+1,y] - green_color == 0)):
             botPose[botId][0], botPose[botId][1] = x+1, y
             return True
     elif moveType == 7:
-        if x+1 < img.shape[0] and y-1 >= 0 and np.all(img[x+1,y-1] - valid_color == 0):
+        if x+1 < img.shape[0] and y-1 >= 0 and (np.all(img[x+1,y-1] - valid_color == 0) or np.all(img[x+1,y-1] - gree_color == 0)):
             botPose[botId][0], botPose[botId][1] = x+1, y-1
             return True
     elif moveType == 8:
-        if y-1 >= 0 and np.all(img[x,y-1] - valid_color == 0):
+        if y-1 >= 0 and (np.all(img[x,y-1] - valid_color == 0) or np.all(img[x,y-1] - green_color == 0)):
             botPose[botId][0], botPose[botId][1] = x, y-1
             return True
     else:
