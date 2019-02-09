@@ -179,7 +179,7 @@ def setup():
 
 
 def createImage(size1,size2):
-    global img,obstaclePose, greenZone, redZone, level, numbots, greenZone
+    global img,obstaclePose, greenZone, redZone, level, numbots, originalGreenZone
     setup()
 
     size=size2//2
@@ -231,7 +231,7 @@ def createImage(size1,size2):
             x, y = random.randint(0, 199), random.randint(0, 199)
         botPose.append([x, y])
 
-    img[img.shape[0]-3:img.shape[0]+3, img.shape[1]-3:img.shape[1]+3] = [0, 255, 0]
+    img[img.shape[0]-3:img.shape[0], img.shape[1]-3:img.shape[1]] = [0, 255, 0]
     greenZone.append([[img.shape[0]-3, img.shape[1]-3], [img.shape[0]-3, img.shape[1]-1], [img.shape[0]-1, img.shape[1]-1], [img.shape[0]-1, img.shape[1]-3]])
 
     # Shuffle the lists to prevent easy giveaways!
