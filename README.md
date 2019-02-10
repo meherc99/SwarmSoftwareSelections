@@ -28,9 +28,15 @@ For any queries, doubts or help, please email at: spandankumarsahu@gmail.com or 
 ## How to Run
 Clone this repository (either download it, or use this command on a terminal: `git clone https://github.com/Swarm-IITKgp/SwarmSoftwareSelections`)
 
-In one terminal, enter the following:
+GRANTING PERMISSIONS:
+Change the execution permissions of  setup.sh and run.sh by using the following commands:
 
   `chmod +x setup.sh`
+  `chmod +x run.sh`
+
+FIRST RUN:
+
+In one terminal, enter the following:
 
   `./setup.sh`
 
@@ -43,6 +49,12 @@ In another terminal, run:
 If you want to view the simulations, run:
 
   `python simulation.py`
+
+NOTE FOR FUTURE RUNS:
+	Instead of running setup.sh, which may take some extra time confirming the dependencies, you may directly use:
+	`./run.sh`
+
+	But make sure that you have all the dependencies installed before using this.
 
 Your task is to complete up as many functions/levels as possible in `code.py` and submit your codes to spandankumarsahu@gmail.com. You need not attempt all the levels, but sure, the more the better your chances are to get into the team. Your functions may not be optimal (in some cases, optimality cannot even be guaranteed!). We would solely judge on how you approach the problem and how much effort you've put in! :)
 

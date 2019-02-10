@@ -7,16 +7,16 @@ class myThread (threading.Thread):
       self.botId = botId
 
    def run(self):
-      os.system("python code.py "+str(self.botId))
+      os.system("python3 code.py "+str(self.botId))
 
 
 
 level = get_level()
 if level == 1:
-    os.system("python code.py 0")
+    os.system("python3 code.py 0")
     print("The final score is: " + str(get_score()))
 elif level == 2:
-    os.system("python code.py 0")
+    os.system("python3 code.py 0")
     print("The final score is: " + str(get_score()))
 elif level == 3:
     threads = []

@@ -154,7 +154,7 @@ def check_and_move(botId, moveType):
             botPose[botId][0], botPose[botId][1] = x+1, y
             return True
     elif moveType == 7:
-        if x+1 < img.shape[0] and y-1 >= 0 and (np.all(img[x+1,y-1] - valid_color == 0) or np.all(img[x+1,y-1] - gree_color == 0)):
+        if x+1 < img.shape[0] and y-1 >= 0 and (np.all(img[x+1,y-1] - valid_color == 0) or np.all(img[x+1,y-1] - green_color == 0)):
             botPose[botId][0], botPose[botId][1] = x+1, y-1
             return True
     elif moveType == 8:
