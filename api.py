@@ -38,7 +38,7 @@ def send_command(botId, moveType):
         have been collected, the mission_complete value will be set to True
     '''
     command = {
-                'botId': 0,
+                'botId': botId,
                 'moveType':moveType,
     }
     r=requests.get(cmd_url,json=command)
