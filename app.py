@@ -50,7 +50,7 @@ def getMap():
     global img, numbots
     curr_img = np.copy(img)
     for botId in range(numbots):
-        curr_img[botPose[botId][0]-3:botPose[botId][0]+3, botPose[botId][1]-3:botPose[botId][1]+3] = np.array([0, 0, 255])
+        curr_img[botPose[botId][0]-3:min(botPose[botId][0]+3,200), botPose[botId][1]-3:min(botPose[botId][1]+3,200)] = np.array([0, 0, 255])
     im=Image.fromarray(curr_img)
     im.save("images/curr_map.png")
     return send_file('images/curr_map.png', mimetype='image/png',cache_timeout=-1)
@@ -116,49 +116,49 @@ def check_mission(botId):
         maxx, maxy = max([point[0] for point in rect]), max([point[1] for point in rect])
         if minx <= botPose[botId][0] <= maxx and miny <= botPose[botId][1] <= maxy:
             greenZone = [r for r in greenZone if r != rect]
-            img[rect[0][0]:rect[2][0], rect[0][1]:rect[2][1]] = [0, 100, 0]
+            img[rect[0][0]:rect[2][0]+1, rect[0][1]:rect[2][1]+1] = [0, 100, 0]
             break
     if len(greenZone) == 0:
         mission_complete = True
     return move_score
 
+
 def check_and_move(botId, moveType):
     global img, botPose
     x = botPose[botId][0]
     y = botPose[botId][1]
-    valid_color = np.array([255, 255, 255])
-    green_color = np.array([0, 255, 0])
+    invalid_color = np.array([0,0,0])
     print(img[x,y])
     if moveType == 1:
-        if x-1 >= 0 and  y-1 >= 0 and (np.all(img[x-1,y-1] - valid_color == 0) or np.all(img[x-1,y-1] - green_color == 0)):
+        if x-1 >= 0 and  y-1 >= 0 and not np.all((img[x-1,y-1] - invalid_color) == 0) and not [x-1,y-1] in botPose:
             botPose[botId][0], botPose[botId][1] = x-1, y-1
             return True
     elif moveType == 2:
-        if x-1 >= 0 and (np.all(img[x-1,y] - valid_color == 0) or np.all(img[x-1,y] - green_color == 0)):
+        if x-1 >= 0 and not np.all((img[x-1,y] - invalid_color) == 0) and not [x-1,y] in botPose:
             botPose[botId][0], botPose[botId][1] = x-1, y
             return True
     elif moveType == 3:
-        if x-1 >= 0 and y+1 < img.shape[1] and (np.all(img[x-1,y+1] - valid_color == 0) or np.all(img[x-1,y+1] - green_color == 0)):
+        if x-1 >= 0 and y+1 < img.shape[1] and not np.all((img[x-1,y+1] - invalid_color) == 0) and not [x-1,y+1] in botPose:
             botPose[botId][0], botPose[botId][1] = x-1, y+1
             return True
     elif moveType == 4:
-        if y+1 < img.shape[1] and (np.all(img[x,y+1] - valid_color == 0) or np.all(img[x,y+1] - green_color == 0)):
+        if y+1 < img.shape[1] and not np.all((img[x,y+1] - invalid_color) == 0) and not [x,y+1] in botPose:
             botPose[botId][0], botPose[botId][1] = x, y+1
             return True
     elif moveType == 5:
-        if x+1 < img.shape[0] and y+1 < img.shape[1] and (np.all(img[x+1,y+1] - valid_color == 0) or np.all(img[x+1,y+1] - green_color == 0)):
+        if x+1 < img.shape[0] and y+1 < img.shape[1] and not np.all((img[x+1,y+1] - invalid_color) == 0) and not [x+1,y+1] in botPose:
             botPose[botId][0], botPose[botId][1] = x+1, y+1
             return True
     elif moveType == 6:
-        if x+1 < img.shape[0] and (np.all(img[x+1,y] - valid_color == 0) or np.all(img[x+1,y] - green_color == 0)):
+        if x+1 < img.shape[0] and not np.all((img[x+1,y] - invalid_color) == 0) and not [x+1,y] in botPose:
             botPose[botId][0], botPose[botId][1] = x+1, y
             return True
     elif moveType == 7:
-        if x+1 < img.shape[0] and y-1 >= 0 and (np.all(img[x+1,y-1] - valid_color == 0) or np.all(img[x+1,y-1] - gree_color == 0)):
+        if x+1 < img.shape[0] and y-1 >= 0 and not np.all((img[x+1,y-1] - invalid_color) == 0) and not [x+1,y-1] in botPose:
             botPose[botId][0], botPose[botId][1] = x+1, y-1
             return True
     elif moveType == 8:
-        if y-1 >= 0 and (np.all(img[x,y-1] - valid_color == 0) or np.all(img[x,y-1] - green_color == 0)):
+        if y-1 >= 0 and not np.all((img[x,y-1] - invalid_color) == 0) and not [x,y-1] in botPose:
             botPose[botId][0], botPose[botId][1] = x, y-1
             return True
     else:
