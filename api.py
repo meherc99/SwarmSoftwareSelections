@@ -4,6 +4,9 @@ from io import BytesIO
 from PIL import Image
 import numpy as np
 
+import os
+os.environ['NO_PROXY'] = '127.0.0.1'
+
 '''
 Feel free to visit explore each of the links after you have run setup.sh
 '''

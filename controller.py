@@ -1,6 +1,8 @@
 from api import *
 import threading, os, sys
 
+os.environ['NO_PROXY'] = '127.0.0.1'
+
 class myThread (threading.Thread):
    def __init__(self, botId):
       threading.Thread.__init__(self)

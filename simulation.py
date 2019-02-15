@@ -6,6 +6,10 @@ from io import BytesIO
 import numpy as np
 import matplotlib.pyplot as plt
 
+import os
+os.environ['NO_PROXY'] = '127.0.0.1'
+
+
 url = 'http://127.0.0.1:5000/map'
 
 plt.show(block=False)
