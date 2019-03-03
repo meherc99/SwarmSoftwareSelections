@@ -44,6 +44,7 @@ def aStar(start, goal):
     #Add the starting point to the open set
     openset.add(current)
     #While the open set is not empty
+    dfjngjk
     while openset:
         #Find the item in the open set with the lowest G + H score
         current = min(openset, key=lambda o:o.G + o.H)
