@@ -88,6 +88,15 @@ def aStar(start, goal):
 	#Throw an exception if there is no path
 	raise ValueError('No Path Found')
 
+def closestpt(pt,goals):
+	nodes = np.asarray(goals)
+	dist = np.sum((nodes - pt)**2, axis=1)
+	dist2 = np.sum(dist,axis=1)
+	closestgreen = np.argmin(dist2)
+	green = nodes[closestgreen]
+	closestpt = np.argmin(np.sum((green - pt)**2,axis=1))
+	return closestgreen, closestpt
+
 def level1(botId):
 	global grid
 	moveType = 5
@@ -105,15 +114,9 @@ def level1(botId):
 			for j in range(pt[0][1],pt[2][1]+1):
 				grid[i][j]=Node(0,(i,j))
 
-	# i=0
-	# for x in greenZone[0]:
-	# 	d = (x[0] - botsPose[0][0])**2 + (x[1] - botsPose[0][1])**2
-
-	# nodes = np.asarray(greenZone)
- #    dist_2 = np.sum((nodes - node)**2, axis=1)
-
+	closegreen, closecorner = closestpt(botsPose[0],greenZone)
 	start=grid[botsPose[0][0]][botsPose[0][1]]
-	goal=grid[greenZone[0][0][0]][greenZone[0][0][1]]
+	goal=grid[greenZone[closegreen][closecorner][0]][greenZone[closegreen][closecorner][1]]
 	path=aStar(start, goal)
 	print(len(path))
 	print("final pos:",greenZone[0][0])
@@ -141,7 +144,6 @@ def level2(botId):
 	redZone = get_redZone_list()
 	originalGreenZone = get_original_greenZone_list()
 
-
 	for x in originalGreenZone:
 		grid=[]
 		print(*greenZone)
@@ -154,8 +156,9 @@ def level2(botId):
 				for j in range(pt[0][1],pt[2][1]+1):
 					grid[i][j]=Node(0,(i,j))
 
-		start = grid[pos[0][0]][pos[0][1]]
-		goal = grid[x[0][0]][x[0][1]]
+		closegreen, closecorner = closestpt(pos[0],greenZone)
+		start=grid[pos[0][0]][pos[0][1]]
+		goal=grid[greenZone[closegreen][closecorner][0]][greenZone[closegreen][closecorner][1]]
 		print(start.point, goal.point)
 		path=aStar(start, goal)
 		print(len(path))
