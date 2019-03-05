@@ -88,7 +88,7 @@ def aStar(start, goal):
 	#Throw an exception if there is no path
 	raise ValueError('No Path Found')
 
-def closestpt(pt,goals):
+def closestpt(pt, goals):
 	nodes = np.asarray(goals)
 	dist = np.sum((nodes - pt)**2, axis=1)
 	dist2 = np.sum(dist,axis=1)
@@ -96,6 +96,30 @@ def closestpt(pt,goals):
 	green = nodes[closestgreen]
 	closestpt = np.argmin(np.sum((green - pt)**2,axis=1))
 	return closestgreen, closestpt
+
+def shortpath(start,goals):
+	steps=[]
+	x=0
+	min_step=5000
+
+	for goal in goals:
+		steps[x]=aStar(start, grid[int((goal[0][0]+goal[2][0])/2)][int((goal[0][1]+goal[2][1])/2)])
+		if len(steps[x]) < min_step:
+			min_step = len(steps[x])
+			minx=x
+		x=x+1
+
+	x=0
+	min_step=5000
+	for x in range(0,4):
+		corners[x]=astar(start, goals[minx][x])
+		if len(corners[x])<min_step:
+			min_step=len(corners[x])
+			mincorn = x
+
+	return corners[mincorn]
+
+
 
 def level1(botId):
 	global grid
@@ -144,9 +168,49 @@ def level2(botId):
 	redZone = get_redZone_list()
 	originalGreenZone = get_original_greenZone_list()
 
+	# for x in originalGreenZone:
+	# 	grid=[]
+	# 	# print(*greenZone)
+	# 	for i in range(200):
+	# 		grid.append([])
+	# 		for j in range(200):
+	# 			grid[i].append(Node(1,(i,j)))
+	# 	for pt in obstaclePose:
+	# 		for i in range(pt[0][0],pt[2][0]+1):
+	# 			for j in range(pt[0][1],pt[2][1]+1):
+	# 				grid[i][j]=Node(0,(i,j))
+
+	# 	closegreen, closecorner = closestpt(pos[0],greenZone)
+	# 	start=grid[pos[0][0]][pos[0][1]]
+	# 	goal=grid[greenZone[closegreen][closecorner][0]][greenZone[closegreen][closecorner][1]]
+	# 	print(start.point, goal.point)
+	# 	path=aStar(start, goal)
+	# 	print(len(path))
+	# 	print("final pos:",greenZone[0][0])
+	# 	pos=get_botPose_list()
+	# 	print("initial pos:",pos[0])
+	# 	sleep(2)
+	# 	for i in range(1,len(path)):
+	# 		successful_move, mission_complete = send_command(botId,path[i].move)
+	# 		pos=get_botPose_list()
+	# 		if successful_move:
+	# 			print("YES")
+	# 		else:
+	# 			print("NO")
+	# 		pos = get_botPose_list()
+	# 		print(pos[0])
+	# 	greenZone = get_greenZone_list()
+	# 	print(*greenZone)
+	# if mission_complete:
+	# 	print("MISSION COMPLETE")
+	# pos=get_botPose_list()
+	# print(pos[0])
+
+	# greenZone = originalGreenZone
+
 	for x in originalGreenZone:
 		grid=[]
-		print(*greenZone)
+		# print(*greenZone)
 		for i in range(200):
 			grid.append([])
 			for j in range(200):
@@ -156,11 +220,7 @@ def level2(botId):
 				for j in range(pt[0][1],pt[2][1]+1):
 					grid[i][j]=Node(0,(i,j))
 
-		closegreen, closecorner = closestpt(pos[0],greenZone)
-		start=grid[pos[0][0]][pos[0][1]]
-		goal=grid[greenZone[closegreen][closecorner][0]][greenZone[closegreen][closecorner][1]]
-		print(start.point, goal.point)
-		path=aStar(start, goal)
+		path = shortpath(pos[0],greenZone)
 		print(len(path))
 		print("final pos:",greenZone[0][0])
 		pos=get_botPose_list()
@@ -181,6 +241,7 @@ def level2(botId):
 		print("MISSION COMPLETE")
 	pos=get_botPose_list()
 	print(pos[0])
+
 
 def level3(botId):
 	pass
