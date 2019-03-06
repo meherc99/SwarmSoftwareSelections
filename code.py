@@ -100,24 +100,27 @@ def closestpt(pt, goals):
 def shortpath(start,goals):
 	steps=[]
 	x=0
-	min_step=5000
+	min_step=50000
 
 	for goal in goals:
-		steps[x]=aStar(grid[start[0]][start[1]] , grid[int((goal[0][0]+goal[2][0])/2)][int((goal[0][1]+goal[2][1])/2)])
+		steps.append(aStar(grid[start[0]][start[1]], grid[int((goal[0][0]+goal[2][0])/2)][int((goal[0][1]+goal[2][1])/2)]))
 		if len(steps[x]) < min_step:
 			min_step = len(steps[x])
 			minx=x
 		x=x+1
 
 	x=0
-	min_step=5000
-	for x in range(0,4):
-		corners[x]=astar(start, goals[minx][x])
+	# min_step=50000
+	corners=[]
+	for x in range(4):
+		corners.append(aStar(grid[start[0]][start[1]], grid[goals[minx][x][0]][goals[minx][x][1]]))
 		if len(corners[x])<min_step:
 			min_step=len(corners[x])
 			mincorn = x
 
-	return corners[mincorn]
+	print("destination:",goals[minx][mincorn])
+
+	return aStar(grid[start[0]][start[1]], grid[goals[minx][mincorn][0]][goals[minx][mincorn][1]])
 
 
 
@@ -186,7 +189,7 @@ def level2(botId):
 	# 	print(start.point, goal.point)
 	# 	path=aStar(start, goal)
 	# 	print(len(path))
-	# 	print("final pos:",greenZone[0][0])
+	# 	print("final pos:",greenZone[closegreen][closecorner])
 	# 	pos=get_botPose_list()
 	# 	print("initial pos:",pos[0])
 	# 	sleep(2)
@@ -219,16 +222,16 @@ def level2(botId):
 			for i in range(pt[0][0],pt[2][0]+1):
 				for j in range(pt[0][1],pt[2][1]+1):
 					grid[i][j]=Node(0,(i,j))
-
+					
+		greenZone = get_greenZone_list()				
 		path = shortpath(pos[0],greenZone)
 		print(len(path))
-		print("final pos:",greenZone[0][0])
+		# print("final pos:",greenZone[0][0])
 		pos=get_botPose_list()
 		print("initial pos:",pos[0])
 		sleep(2)
 		for i in range(1,len(path)):
 			successful_move, mission_complete = send_command(botId,path[i].move)
-			pos=get_botPose_list()
 			if successful_move:
 				print("YES")
 			else:
@@ -237,20 +240,124 @@ def level2(botId):
 			print(pos[0])
 		greenZone = get_greenZone_list()
 		print(*greenZone)
+
 	if mission_complete:
 		print("MISSION COMPLETE")
+
 	pos=get_botPose_list()
 	print(pos[0])
 
 
 def level3(botId):
-	pass
+	global grid
+	moveType = 5
+	pos = get_botPose_list()
+	obstaclePose = get_obstacles_list()
+	greenZone = get_greenZone_list()
+	redZone = get_redZone_list()
+	originalGreenZone = get_original_greenZone_list()
+
+	closegreen=[]
+	closecorner=[]
+	path=[]
+	for x in originalGreenZone:
+		for i in range(200):
+			grid.append([])
+			for j in range(200):
+				grid[i].append(Node(1,(i,j)))
+		for pt in obstaclePose:
+			for i in range(pt[0][0],pt[2][0]+1):
+				for j in range(pt[0][1],pt[2][1]+1):
+					grid[i][j]=Node(0,(i,j))
+
+
+		for bot in range(0,2):
+			a, b = closestpt(pos[bot],greenZone)
+			closegreen.append(a)
+			closecorner.append(b)
+			start=grid[pos[bot][0]][pos[bot][1]]
+			goal=grid[greenZone[closegreen[bot]][closecorner[bot]][0]][greenZone[closegreen[bot]][closecorner[bot]][1]]
+			p = aStar(start, goal)
+			path.append(p)
+
+		if len(path[0]) <= len(path[1]):
+			botmin=0
+		else:
+			botmin=1
+
+		print(len(path[botmin]))
+		print("final pos:",greenZone[closegreen[bot]][closecorner[bot]])
+		pos=get_botPose_list()
+		print("initial pos:",pos[botmin])
+		sleep(5)
+		for i in range(1,len(path[botmin])):
+			successful_move, mission_complete = send_command(botId,path[botmin][i].move)
+			pos=get_botPose_list()
+			if successful_move:
+				print("YES")
+			else:
+				print("NO")
+			if mission_complete:
+				print("MISSION COMPLETE")
+			pos=get_botPose_list()
+			print(pos[0])
 
 def level4(botId):
 	pass
 
 def level5(botId):
-	pass
+	global grid
+	moveType = 5
+	pos = get_botPose_list()
+	obstaclePose = get_obstacles_list()
+	greenZone = get_greenZone_list()
+	redZone = get_redZone_list()
+	originalGreenZone = get_original_greenZone_list()
+
+	closegreen=[]
+	closecorner=[]
+	path=[]
+	for x in originalGreenZone:
+		for i in range(200):
+			grid.append([])
+			for j in range(200):
+				grid[i].append(Node(1,(i,j)))
+		for pt in obstaclePose:
+			for i in range(pt[0][0],pt[2][0]+1):
+				for j in range(pt[0][1],pt[2][1]+1):
+					grid[i][j]=Node(0,(i,j))
+
+
+		for bot in range(0,2):
+			a, b = closestpt(pos[bot],greenZone)
+			closegreen.append(a)
+			closecorner.append(b)
+			start=grid[pos[bot][0]][pos[bot][1]]
+			goal=grid[greenZone[closegreen[bot]][closecorner[bot]][0]][greenZone[closegreen[bot]][closecorner[bot]][1]]
+			p = aStar(start, goal)
+			path.append(p)
+
+		if len(path[0]) <= len(path[1]):
+			botmin=0
+		else:
+			botmin=1
+
+		print(len(path[botmin]))
+		print("final pos:",greenZone[closegreen[bot]][closecorner[bot]])
+		pos=get_botPose_list()
+		print("initial pos:",pos[botmin])
+		sleep(5)
+		for i in range(1,len(path[botmin])):
+			successful_move, mission_complete = send_command(botId,path[botmin][i].move)
+			pos=get_botPose_list()
+			if successful_move:
+				print("YES")
+			else:
+				print("NO")
+			if mission_complete:
+				print("MISSION COMPLETE")
+			pos=get_botPose_list()
+			print(pos[0])
 
 def level6(botId):
 	pass
