@@ -103,7 +103,7 @@ def shortpath(start,goals):
 	min_step=5000
 
 	for goal in goals:
-		steps[x]=aStar(start, grid[int((goal[0][0]+goal[2][0])/2)][int((goal[0][1]+goal[2][1])/2)])
+		steps[x]=aStar(grid[start[0]][start[1]] , grid[int((goal[0][0]+goal[2][0])/2)][int((goal[0][1]+goal[2][1])/2)])
 		if len(steps[x]) < min_step:
 			min_step = len(steps[x])
 			minx=x
